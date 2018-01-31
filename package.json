@@ -1,0 +1,34 @@
+{
+  "name": "homebridge-yeelight-wifi",
+  "version": "1.0.2",
+  "description": "Homebridge plugin for Yeelight white and colored bulbs.",
+  "license": "MIT",
+  "keywords": [
+    "homebridge-plugin",
+    "yeelight"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vieira/homebridge-yeelight-wifi.git"
+  },
+  "author": {
+    "name": "vieira"
+  },
+  "bugs": {
+    "url": "http://github.com/vieira/homebridge-yeelight-wifi/issues"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "eslint": "^4.10.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0"
+  },
+  "engines": {
+    "node": ">=7.6.0",
+    "homebridge": ">=0.4.0"
+  },
+  "scripts": {
+    "lint": "eslint ."
+  }
+}
