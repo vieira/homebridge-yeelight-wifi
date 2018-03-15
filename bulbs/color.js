@@ -53,12 +53,12 @@ class YeeColor extends YeeWhite {
   }
 
   static setColor() {
-    let hue;
-    let sat;
+    let hue = null;
+    let sat = null;
     return function (h, s) {
-      hue = hue || h;
-      sat = sat || s;
-      if (!hue || !sat) return Promise.resolve();
+      hue = hue !== null ? hue : h;
+      sat = sat !== null ? sat : s;
+      if (hue === null || sat === null) return Promise.resolve();
       this.setPower(1);
       const req = {
         method: 'set_hsv',
