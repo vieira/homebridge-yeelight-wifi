@@ -1,5 +1,5 @@
 const YeeWhite = require('./white');
-const isInteger = Number.isInteger;
+const { isInteger } = Number;
 
 class YeeColor extends YeeWhite {
   constructor(did, model, platform) {
