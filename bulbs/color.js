@@ -1,4 +1,5 @@
 const YeeWhite = require('./white');
+const { isInteger } = Number;
 
 class YeeColor extends YeeWhite {
   constructor(did, model, platform) {
@@ -56,9 +57,9 @@ class YeeColor extends YeeWhite {
     let hue;
     let sat;
     return function (h, s) {
-      hue = hue || h;
-      sat = sat || s;
-      if (!hue || !sat) return Promise.resolve();
+      hue = isInteger(hue) ? hue : h;
+      sat = isInteger(sat) ? sat : s;
+      if (!isInteger(hue) || !isInteger(sat)) return Promise.resolve();
       this.setPower(1);
       const req = {
         method: 'set_hsv',
