@@ -23,6 +23,31 @@ However, out of the factory, the YeeLight devices do come with the API disabled 
 you will have to enable it for them to work with Homebridge. To do so, go to settings
 and enable **Developer Mode**.
 
+## Configuration (Optional)
+
+The following parameters can be changed in case you need to change the defaults.
+
+```json
+{
+    "bridge": {
+        "name": "Raspberry Pi",
+    },
+    "accessories": [{
+    }],
+    "platforms": [{
+        "platform": "yeelight",
+        "name": "Yeelight",
+        "transitions": {
+            "power": 400,
+            "brightness": 400
+        },
+        "multicast": {
+            "interface": "0.0.0.0"
+        }
+    }]
+}
+```
+
 ## Motivation
 
 When I got my first YeeLight bulb, there was already a homebridge plugin supporting

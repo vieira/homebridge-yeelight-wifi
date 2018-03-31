@@ -21,9 +21,11 @@ class YeePlatform {
     this.devices = {};
 
     this.sock.bind(this.port, () => {
+      const mcastInterface = config.multicast && config.multicast.interface;
       this.sock.setBroadcast(true);
       this.sock.setMulticastTTL(128);
       this.sock.addMembership(this.addr);
+      if (mcastInterface) this.sock.setMulticastInterface(mcastInterface);
     });
 
     this.api = api;
