@@ -20,6 +20,12 @@ class YeePlatform {
     this.sock = dgram.createSocket('udp4');
     this.devices = {};
 
+    this.sock.on('error', (err) => {
+      this.sock.close();
+      this.log(err.message);
+      this.devices = {};
+    });
+
     this.sock.bind(this.port, () => {
       this.sock.setBroadcast(true);
       this.sock.setMulticastTTL(128);
