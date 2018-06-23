@@ -138,7 +138,7 @@ class YeeWhite {
     const req = {
       method: 'set_bright',
       params: [
-        brightness,
+        Math.max(brightness, 1),
         'smooth',
         this.transitions.brightness,
       ],
