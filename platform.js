@@ -90,7 +90,12 @@ class YeePlatform {
     let accessory = this.devices[id];
     if (!accessory) {
       const uuid = global.UUIDGen.generate(id);
-      const name = id.slice(-6);
+      const deviceId = id.slice(-6);
+      const name = (
+        this.config &&
+        this.config.defaultValue &&
+        this.config.defaultValue[deviceId] &&
+        this.config.defaultValue[deviceId].name) || deviceId;
       accessory = new global.Accessory(name, uuid);
       accessory.context.did = id;
       accessory.context.model = model;
