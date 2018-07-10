@@ -43,6 +43,11 @@ The following parameters can be changed in case you need to change the defaults.
         },
         "multicast": {
             "interface": "0.0.0.0"
+        },
+        "defaultValue": {
+            "aed78s": {
+                "name": "Kitchen"
+            }
         }
     }]
 }

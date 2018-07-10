@@ -1,6 +1,6 @@
 {
   "name": "homebridge-yeelight-wifi",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Homebridge plugin for Yeelight white and colored bulbs.",
   "license": "MIT",
   "keywords": [
@@ -17,6 +17,11 @@
   "bugs": {
     "url": "http://github.com/vieira/homebridge-yeelight-wifi/issues"
   },
+  "contributors": [{
+    "name": "Oleksandr Boichenko",
+    "email": "banzalik@gmail.com",
+    "url": "http://github.com/banzalik"
+  }],
   "dependencies": {},
   "devDependencies": {
     "eslint": "^4.10.0",

@@ -10,6 +10,7 @@ class YeeWhite {
     this.sock = null;
     this.accessory = null;
     this.timeout = null;
+    this.config = platform.config;
     this.transitions = platform.config && platform.config.transitions;
     this.transitions = {
       power: (this.transitions && this.transitions.power) || 400,
@@ -44,7 +45,12 @@ class YeeWhite {
   }
 
   configureServices() {
-    const name = this.did.slice(-6);
+    const deviceId = this.did.slice(-6);
+    const name = (
+      this.config &&
+      this.config.defaultValue &&
+      this.config.defaultValue[deviceId] &&
+      this.config.defaultValue[deviceId].name) || deviceId;
     this.accessory.getService(global.Service.AccessoryInformation)
       .setCharacteristic(global.Characteristic.Manufacturer, 'YeeLight')
       .setCharacteristic(global.Characteristic.Model, this.model)
