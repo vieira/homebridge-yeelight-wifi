@@ -2,9 +2,10 @@ const net = require('net');
 const { id, fromYeeToHk } = require('../utils');
 
 class YeeWhite {
-  constructor(did, model, platform) {
+  constructor(did, model, support, platform) {
     this.did = did;
     this.model = model;
+    this.support = support;
     this.log = platform.log;
     this.cmds = {};
     this.sock = null;
@@ -44,13 +45,21 @@ class YeeWhite {
     this._bright = Number(bright);
   }
 
+  get temperature() {
+    return this._temperature;
+  }
+
+  set temperature(kelvin) {
+    this._temperature = (10 ** 6) / Number(kelvin);
+  }
+
   configureServices() {
     const deviceId = this.did.slice(-6);
     const name = (
-      this.config &&
-      this.config.defaultValue &&
-      this.config.defaultValue[deviceId] &&
-      this.config.defaultValue[deviceId].name) || deviceId;
+      this.config
+      && this.config.defaultValue
+      && this.config.defaultValue[deviceId]
+      && this.config.defaultValue[deviceId].name) || deviceId;
     this.accessory.getService(global.Service.AccessoryInformation)
       .setCharacteristic(global.Characteristic.Manufacturer, 'YeeLight')
       .setCharacteristic(global.Characteristic.Model, this.model)
@@ -92,6 +101,24 @@ class YeeWhite {
           callback(err, this.bright);
         }
       }).updateValue(this.bright);
+
+    if (!this.support.includes('set_ct_abx')) return;
+
+    (lightbulbService.getCharacteristic(global.Characteristic.ColorTemperature)
+    || lightbulbService.addOptionalCharacteristic(
+      global.Characteristic.ColorTemperature,
+    ))
+      .on('set', async (value, callback) => {
+        try {
+          await this.setColorTemperature(value);
+          callback(null, value);
+        } catch (err) {
+          callback(err, this.temperature);
+        }
+      }).setProps({
+        minValue: 154,
+        maxValue: 588,
+      }).updateValue(this.temperature);
   }
 
   connect() {
@@ -150,6 +177,19 @@ class YeeWhite {
       ],
     };
     return this.sendCmd(req).then(() => { this._bright = brightness; });
+  }
+
+  async setColorTemperature(mired) {
+    const kelvin = (10 ** 6) / mired;
+    const req = {
+      method: 'set_ct_abx',
+      params: [
+        kelvin,
+        'smooth',
+        this.transitions.brightness,
+      ],
+    };
+    return this.sendCmd(req).then(() => { this._temperature = mired; });
   }
 
   getProperty(properties) {
@@ -233,12 +273,16 @@ class YeeWhite {
       return false;
     }
 
-    const lightbulbService =
-      device.accessory.getService(global.Service.Lightbulb);
+    const lightbulbService = (
+      device.accessory.getService(global.Service.Lightbulb)
+    );
 
     Object.keys(message.params).forEach((param) => {
-      const { value, characteristic } =
-      fromYeeToHk(this, param, message.params[param]);
+      const { value, characteristic } = fromYeeToHk(
+        this,
+        param,
+        message.params[param],
+      );
       lightbulbService.getCharacteristic(characteristic).updateValue(value);
     });
     return true;

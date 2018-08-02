@@ -35,6 +35,12 @@ const fromYeeToHk = (device, property, value = 0) => {
         value: device.hue,
         characteristic: global.Characteristic.Hue,
       };
+    case 'ct':
+      device.temperature = value;
+      return {
+        value: device.temperature,
+        characteristic: global.Characteristic.ColorTemperature,
+      };
     default:
       device.log(
         'info',

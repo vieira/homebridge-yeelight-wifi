@@ -24,8 +24,7 @@ class YeePlatform {
       this.sock.setBroadcast(true);
       this.sock.setMulticastTTL(128);
       this.sock.addMembership(this.addr);
-      const multicastInterface =
-        config && config.multicast && config.multicast.interface;
+      const multicastInterface = config && config.multicast && config.multicast.interface;
       if (multicastInterface) {
         this.sock.setMulticastInterface(multicastInterface);
       }
@@ -85,6 +84,7 @@ class YeePlatform {
       bright,
       hue,
       sat,
+      support,
     },
   ) {
     let accessory = this.devices[id];
@@ -92,10 +92,11 @@ class YeePlatform {
       const uuid = global.UUIDGen.generate(id);
       const deviceId = id.slice(-6);
       const name = (
-        this.config &&
-        this.config.defaultValue &&
-        this.config.defaultValue[deviceId] &&
-        this.config.defaultValue[deviceId].name) || deviceId;
+        this.config
+        && this.config.defaultValue
+        && this.config.defaultValue[deviceId]
+        && this.config.defaultValue[deviceId].name
+      ) || deviceId;
       accessory = new global.Accessory(name, uuid);
       accessory.context.did = id;
       accessory.context.model = model;
@@ -110,7 +111,7 @@ class YeePlatform {
     if (accessory.reachable) return;
 
     const YeeDevice = model === 'mono' ? YeeWhite : YeeColor;
-    const device = new YeeDevice(id, model, this);
+    const device = new YeeDevice(id, model, support, this);
     device.accessory = accessory;
     device.endpoint = endpoint;
     device.power = power;

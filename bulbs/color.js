@@ -3,8 +3,8 @@ const YeeWhite = require('./white');
 const { isInteger } = Number;
 
 class YeeColor extends YeeWhite {
-  constructor(did, model, platform) {
-    super(did, model, platform);
+  constructor(did, model, support, platform) {
+    super(did, model, support, platform);
     this.transitions.color = this.transitions.color || 1500;
     this.setColor = YeeColor.setColor();
   }
@@ -28,8 +28,9 @@ class YeeColor extends YeeWhite {
   configureServices() {
     super.configureServices();
 
-    const lightbulbService =
-          this.accessory.getService(global.Service.Lightbulb);
+    const lightbulbService = (
+      this.accessory.getService(global.Service.Lightbulb)
+    );
 
     (lightbulbService.getCharacteristic(global.Characteristic.Hue)
     || lightbulbService.addCharacteristic(global.Characteristic.Hue))
