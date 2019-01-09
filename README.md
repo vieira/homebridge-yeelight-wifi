@@ -39,14 +39,21 @@ The following parameters can be changed in case you need to change the defaults.
         "name": "Yeelight",
         "transitions": {
             "power": 400,
-            "brightness": 400
+            "brightness": 400,
+            "color": 1500,
+            "temperature": 1500
+        },
+        "connection": {
+            "retries": 5,
+            "timeout": 100,
         },
         "multicast": {
             "interface": "0.0.0.0"
         },
         "defaultValue": {
             "aed78s": {
-                "name": "Kitchen"
+                "name": "Kitchen",
+                "blacklist": ["set_hsv"]
             }
         }
     }]

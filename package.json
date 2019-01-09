@@ -17,22 +17,24 @@
   "bugs": {
     "url": "http://github.com/vieira/homebridge-yeelight-wifi/issues"
   },
-  "contributors": [{
-    "name": "Oleksandr Boichenko",
-    "email": "banzalik@gmail.com",
-    "url": "http://github.com/banzalik"
-  }],
+  "contributors": [
+    {
+      "name": "Oleksandr Boichenko",
+      "email": "banzalik@gmail.com",
+      "url": "http://github.com/banzalik"
+    }
+  ],
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^4.10.0",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0"
+    "eslint": "^5.12.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
   },
   "engines": {
     "node": ">=7.6.0",
     "homebridge": ">=0.4.0"
   },
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint --fix ."
   }
 }

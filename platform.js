@@ -1,7 +1,14 @@
 const dgram = require('dgram');
-const YeeWhite = require('./bulbs/white');
-const YeeColor = require('./bulbs/color');
-const { sleep } = require('./utils');
+const YeeBulb = require('./bulbs/bulb');
+const Brightness = require('./bulbs/brightness');
+const Color = require('./bulbs/color');
+const Temperature = require('./bulbs/temperature');
+const {
+  name,
+  blacklist,
+  sleep,
+  pipe,
+} = require('./utils');
 
 class YeePlatform {
   constructor(log, config, api) {
@@ -24,8 +31,9 @@ class YeePlatform {
       this.sock.setBroadcast(true);
       this.sock.setMulticastTTL(128);
       this.sock.addMembership(this.addr);
-      const multicastInterface =
-        config && config.multicast && config.multicast.interface;
+      const multicastInterface = config
+        && config.multicast
+        && config.multicast.interface;
       if (multicastInterface) {
         this.sock.setMulticastInterface(multicastInterface);
       }
@@ -76,27 +84,16 @@ class YeePlatform {
     this.buildDevice(endpoint, headers);
   }
 
-  buildDevice(
-    endpoint,
-    {
-      id,
-      model,
-      power,
-      bright,
-      hue,
-      sat,
-    },
-  ) {
+  buildDevice(endpoint, { id, model, support, ...props }) {
+    const deviceId = id.slice(-6);
+    const hidden = blacklist(deviceId, this.config);
+    const features = support.split(' ').filter(f => !hidden.includes(f));
     let accessory = this.devices[id];
+    const mixins = [];
+
     if (!accessory) {
       const uuid = global.UUIDGen.generate(id);
-      const deviceId = id.slice(-6);
-      const name = (
-        this.config &&
-        this.config.defaultValue &&
-        this.config.defaultValue[deviceId] &&
-        this.config.defaultValue[deviceId].name) || deviceId;
-      accessory = new global.Accessory(name, uuid);
+      accessory = new global.Accessory(name(deviceId, this.config), uuid);
       accessory.context.did = id;
       accessory.context.model = model;
       this.devices[id] = accessory;
@@ -109,14 +106,26 @@ class YeePlatform {
 
     if (accessory.reachable) return;
 
-    const YeeDevice = model === 'mono' ? YeeWhite : YeeColor;
-    const device = new YeeDevice(id, model, this);
+    if (features.includes('set_bright')) {
+      this.log(`device ${accessory.displayName} supports brightness`);
+      mixins.push(Brightness(props));
+    }
+
+    if (features.includes('set_hsv')) {
+      this.log(`device ${accessory.displayName} supports color`);
+      mixins.push(Color(props));
+    }
+
+    // HomeKit specification does not allow temperature for color bulbs
+    if (features.includes('set_ct_abx') && !features.includes('set_hsv')) {
+      this.log(`device ${accessory.displayName} supports color temperature`);
+      mixins.push(Temperature(props));
+    }
+
+    const Bulb = class extends pipe(...mixins)(YeeBulb) {};
+    const device = new Bulb(id, model, this);
     device.accessory = accessory;
     device.endpoint = endpoint;
-    device.power = power;
-    device.bright = bright;
-    device.hue = hue;
-    device.sat = sat;
     device.configureServices();
     accessory.updateReachability(true);
     this.log(`initialized device ${accessory.displayName} (${device.host}).`);

@@ -9,43 +9,36 @@ const sleep = duration => new Promise((resolve) => {
   setTimeout(() => resolve(), duration);
 });
 
-const fromYeeToHk = (device, property, value = 0) => {
-  switch (property) {
-    case 'power':
-      device.power = value;
-      return {
-        value: device.power,
-        characteristic: global.Characteristic.On,
-      };
-    case 'bright':
-      device.bright = value;
-      return {
-        value: device.bright,
-        characteristic: global.Characteristic.Brightness,
-      };
-    case 'sat':
-      device.sat = value;
-      return {
-        value: device.sat,
-        characteristic: global.Characteristic.Saturation,
-      };
-    case 'hue':
-      device.hue = value;
-      return {
-        value: device.hue,
-        characteristic: global.Characteristic.Hue,
-      };
-    default:
-      device.log(
-        'info',
-        `${property} is unsupported in Homekit, ignoring.`,
-      );
-      // Return something conservative
-      return {
-        value: device.power,
-        characteristic: global.Characteristic.On,
-      };
-  }
+const pipe = (...fns) => x => fns.reduce((v, f) => f(v), x);
+
+const name = (devId, config = {}) => (
+  (config.defaultValue
+    && config.defaultValue[devId]
+    && config.defaultValue[devId].name)
+  || devId
+);
+
+const blacklist = (devId, config = {}) => (
+  (config.defaultValue
+    && config.defaultValue[devId]
+    && config.defaultValue[devId].blacklist)
+  || []
+);
+
+const handle = (handlers = []) => (messages) => {
+  messages.toString().split(global.EOL)
+    .filter(it => it)
+    .map(payload => JSON.parse(payload))
+    .forEach((message) => {
+      handlers.find(handler => handler(message));
+    });
 };
 
-module.exports = { id, sleep, fromYeeToHk };
+module.exports = {
+  id,
+  name,
+  blacklist,
+  handle,
+  sleep,
+  pipe,
+};
