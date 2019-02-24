@@ -53,7 +53,7 @@ const Temperature = ({ ct }) => Device => class extends Device {
         }
       }).setProps({
         minValue: 154, // ~6500K
-        maxValue: 588, // ~1700K
+        maxValue: this.model.startsWith('bslamp') ? 588 : 370, // ~1700K or ~2700K
       }).updateValue(this.temperature);
   }
 };
