@@ -26,7 +26,12 @@ const Brightness = ({ bright: b }) => Device => class extends Device {
   }
 
   updateStateFromProp(prop, value) {
-    if (prop === 'bright') {
+    // There are different props being used for brightness
+    // depending on the active_mode in Ceiling lamps
+    if (
+      (this.activeMode === 0 && prop === 'bright')
+      || (this.activeMode === 1 && prop === 'nl_br')
+    ) {
       this.bright = value;
       this.service
         .getCharacteristic(global.Characteristic.Brightness)
