@@ -1,11 +1,12 @@
 {
   "name": "homebridge-yeelight-wifi",
   "version": "1.0.6",
-  "description": "Homebridge plugin for Yeelight white and colored bulbs.",
+  "description": "Homebridge plugin for YeeLight bulbs & lamps.",
   "license": "MIT",
   "keywords": [
     "homebridge-plugin",
-    "yeelight"
+    "yeelight",
+    "ceiling"
   ],
   "repository": {
     "type": "git",
@@ -22,6 +23,11 @@
       "name": "Oleksandr Boichenko",
       "email": "banzalik@gmail.com",
       "url": "http://github.com/banzalik"
+    },
+    {
+      "name": "Andrey Okonetchnikov",
+      "email": "andrey@okonet.ru",
+      "url": "http://github.com/okonet"
     }
   ],
   "dependencies": {},
