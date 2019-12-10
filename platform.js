@@ -1,6 +1,7 @@
 const dgram = require('dgram');
 const YeeBulb = require('./bulbs/bulb');
 const Brightness = require('./bulbs/brightness');
+const MoonlightMode = require('./bulbs/moonlight');
 const Color = require('./bulbs/color');
 const Temperature = require('./bulbs/temperature');
 const {
@@ -84,7 +85,9 @@ class YeePlatform {
     this.buildDevice(endpoint, headers);
   }
 
-  buildDevice(endpoint, { id, model, support, ...props }) {
+  buildDevice(endpoint, {
+    id, model, support, ...props
+  }) {
     const deviceId = id.slice(-6);
     const hidden = blacklist(deviceId, this.config);
     const features = support.split(' ').filter(f => !hidden.includes(f));
@@ -105,6 +108,12 @@ class YeePlatform {
     }
 
     if (accessory.reachable) return;
+
+    // Add support for ceiling lamps with moonlight mode
+    if (features.includes('set_scene')) {
+      this.log(`device ${accessory.displayName} supports moonlight mode`);
+      mixins.push(MoonlightMode(props));
+    }
 
     if (features.includes('set_bright')) {
       this.log(`device ${accessory.displayName} supports brightness`);
