@@ -11,15 +11,17 @@ const sleep = duration => new Promise((resolve) => {
 
 const pipe = (...fns) => x => fns.reduce((v, f) => f(v), x);
 
-const name = (devId, config = {}) => (
-  (config.defaultValue
+const name = (devId, config) => (
+  (config
+    && config.defaultValue
     && config.defaultValue[devId]
     && config.defaultValue[devId].name)
   || devId
 );
 
-const blacklist = (devId, config = {}) => (
-  (config.defaultValue
+const blacklist = (devId, config) => (
+  (config
+    && config.defaultValue
     && config.defaultValue[devId]
     && config.defaultValue[devId].blacklist)
   || []
