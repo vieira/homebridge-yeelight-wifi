@@ -86,11 +86,17 @@ class YeePlatform {
   }
 
   buildDevice(endpoint, {
-    id, model, support, ...props
+    id,
+    model,
+    support,
+    ...props
   }) {
     const deviceId = id.slice(-6);
     const hidden = blacklist(deviceId, this.config);
-    const features = support.split(' ').filter(f => !hidden.includes(f));
+    const features = support
+      .split(' ')
+      .concat(Object.keys(props))
+      .filter(f => !hidden.includes(f));
     let accessory = this.devices[id];
     const mixins = [];
 
@@ -110,7 +116,7 @@ class YeePlatform {
     if (accessory.reachable) return;
 
     // Add support for ceiling lamps with moonlight mode
-    if (features.includes('set_scene')) {
+    if (features.includes('active_mode')) {
       this.log(`device ${accessory.displayName} supports moonlight mode`);
       mixins.push(MoonlightMode(props));
     }
