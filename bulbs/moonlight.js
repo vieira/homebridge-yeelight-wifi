@@ -1,5 +1,3 @@
-const { name } = require('../utils');
-
 /** Support for "moonlight" mode for ceiling lamps
  * active_mode:
  *  0 - Daylight mode |
@@ -42,12 +40,10 @@ const MoonlightMode = ({ bright: b, active_mode: activeMode = 0 }) => Device => 
   }
 
   configureServices() {
-    const deviceId = this.did.slice(-6);
-    const deviceName = name(deviceId, this.config);
     super.configureServices();
 
     this.moonlightModeService = this.accessory.getService(global.Service.Switch)
-      || this.accessory.addService(new global.Service.Switch(`${deviceName} Moonlight Mode`));
+      || this.accessory.addService(new global.Service.Switch('Moonlight Mode'));
 
     this.moonlightModeService.getCharacteristic(global.Characteristic.On)
       .on('set', async (value, callback) => {
