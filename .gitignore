@@ -56,3 +56,7 @@ typings/
 
 # dotenv environment variables file
 .env
+
+# homebridge
+/homebridge/accessories
+/homebridge/persist
