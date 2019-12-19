@@ -4,9 +4,16 @@ const Brightness = require('./bulbs/brightness');
 const MoonlightMode = require('./bulbs/moonlight');
 const Color = require('./bulbs/color');
 const Temperature = require('./bulbs/temperature');
-const {
-  name, blacklist, sleep, pipe,
-} = require('./utils');
+const { name, blacklist, sleep, pipe } = require('./utils');
+
+const MODELS = {
+  MONO: 'mono', // Color Temperature Bulb
+  COLOR: 'color', // RGB Bulb
+  STRIPE: 'stripe', // LED Stripe
+  CEILING: 'ceiling', // Ceiling lights
+  BSLAMP: 'bslamp', // Bed side lamp
+  LAMP: 'lamp', // Star Lamp etc.
+};
 
 class YeePlatform {
   constructor(log, config, api) {
@@ -15,8 +22,8 @@ class YeePlatform {
 
     this.searchMessage = Buffer.from(
       ['M-SEARCH * HTTP/1.1', 'MAN: "ssdp:discover"', 'ST: wifi_bulb'].join(
-        global.EOL,
-      ),
+        global.EOL
+      )
     );
     this.addr = '239.255.255.250';
     this.port = 1982;
@@ -29,7 +36,8 @@ class YeePlatform {
       this.sock.setBroadcast(true);
       this.sock.setMulticastTTL(128);
       this.sock.addMembership(this.addr);
-      const multicastInterface = config && config.multicast && config.multicast.interface;
+      const multicastInterface =
+        config && config.multicast && config.multicast.interface;
       if (multicastInterface) {
         this.sock.setMulticastInterface(multicastInterface);
       }
@@ -61,7 +69,7 @@ class YeePlatform {
       0,
       this.searchMessage.length,
       this.port,
-      this.addr,
+      this.addr
     );
   }
 
@@ -71,7 +79,7 @@ class YeePlatform {
 
     if (method.startsWith('M-SEARCH')) return;
 
-    kvs.forEach((kv) => {
+    kvs.forEach(kv => {
       const [k, v] = kv.split(': ');
       headers[k] = v;
     });
@@ -80,9 +88,7 @@ class YeePlatform {
     this.buildDevice(endpoint, headers);
   }
 
-  buildDevice(endpoint, {
-    id, model, support, ...props
-  }) {
+  buildDevice(endpoint, { id, model, support, ...props }) {
     const deviceId = id.slice(-6);
     const hidden = blacklist(deviceId, this.config);
     const features = support
@@ -105,8 +111,10 @@ class YeePlatform {
 
     if (accessory.reachable) return;
 
-    // Add support for ceiling lamps with moonlight mode
-    if (features.includes('active_mode')) {
+    const family = Object.values(MODELS).find(fam => model.startsWith(fam));
+
+    // Lamps that support moonlight mode
+    if ([MODELS.CEILING, MODELS.LAMP].includes(family)) {
       this.log.debug(`device ${accessory.displayName} supports moonlight mode`);
       mixins.push(MoonlightMode(props));
     }
@@ -124,7 +132,7 @@ class YeePlatform {
     // HomeKit specification does not allow temperature for color bulbs
     if (features.includes('set_ct_abx') && !features.includes('set_hsv')) {
       this.log.debug(
-        `device ${accessory.displayName} supports color temperature`,
+        `device ${accessory.displayName} supports color temperature`
       );
       mixins.push(Temperature(props));
     }
