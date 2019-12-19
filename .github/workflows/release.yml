@@ -3,12 +3,19 @@ name: Release
 on: [push]
 
 jobs:
-  build:
-
+  release:
+    name: Release
     runs-on: ubuntu-latest
-
     steps:
-      - name: Semantic Release Action
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Install dependencies
+        run: yern
+      - name: Release
         uses: codfish/semantic-release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
