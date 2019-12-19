@@ -4,23 +4,27 @@ const Brightness = require('./bulbs/brightness');
 const MoonlightMode = require('./bulbs/moonlight');
 const Color = require('./bulbs/color');
 const Temperature = require('./bulbs/temperature');
-const {
-  name,
-  blacklist,
-  sleep,
-  pipe,
-} = require('./utils');
+const { name, blacklist, sleep, pipe } = require('./utils');
+
+const MODELS = {
+  MONO: 'mono', // Color Temperature Bulb
+  COLOR: 'color', // RGB Bulb
+  STRIPE: 'stripe', // LED Stripe
+  CEILING: 'ceiling', // Ceiling lights
+  BSLAMP: 'bslamp', // Bed side lamp
+  LAMP: 'lamp', // Star Lamp etc.
+};
 
 class YeePlatform {
   constructor(log, config, api) {
     if (!api) return;
-    log(`starting YeePlatform using homebridge API v${api.version}`);
+    log.debug(`starting YeePlatform using homebridge API v${api.version}`);
 
-    this.searchMessage = Buffer.from([
-      'M-SEARCH * HTTP/1.1',
-      'MAN: "ssdp:discover"',
-      'ST: wifi_bulb',
-    ].join(global.EOL));
+    this.searchMessage = Buffer.from(
+      ['M-SEARCH * HTTP/1.1', 'MAN: "ssdp:discover"', 'ST: wifi_bulb'].join(
+        global.EOL
+      )
+    );
     this.addr = '239.255.255.250';
     this.port = 1982;
     this.log = log;
@@ -32,9 +36,8 @@ class YeePlatform {
       this.sock.setBroadcast(true);
       this.sock.setMulticastTTL(128);
       this.sock.addMembership(this.addr);
-      const multicastInterface = config
-        && config.multicast
-        && config.multicast.interface;
+      const multicastInterface =
+        config && config.multicast && config.multicast.interface;
       if (multicastInterface) {
         this.sock.setMulticastInterface(multicastInterface);
       }
@@ -44,18 +47,18 @@ class YeePlatform {
     this.api.on('didFinishLaunching', async () => {
       this.sock.on('message', this.handleMessage.bind(this));
       do {
-        log('doing a round of proactive search for known devices.');
+        log.debug('doing a round of proactive search for known devices.');
         this.search();
         // eslint-disable-next-line no-await-in-loop
         await sleep(15000);
       } while (Object.values(this.devices).some(x => !x.reachable));
 
-      log('all known devices found, stopping proactive search.');
+      log.debug('all known devices found, stopping proactive search.');
     });
   }
 
   configureAccessory(accessory) {
-    this.log(`remembered device ${accessory.displayName}.`);
+    this.log.debug(`remembered device ${accessory.displayName}.`);
     accessory.reachable = false;
     this.devices[accessory.context.did] = accessory;
   }
@@ -66,7 +69,7 @@ class YeePlatform {
       0,
       this.searchMessage.length,
       this.port,
-      this.addr,
+      this.addr
     );
   }
 
@@ -76,21 +79,16 @@ class YeePlatform {
 
     if (method.startsWith('M-SEARCH')) return;
 
-    kvs.forEach((kv) => {
+    kvs.forEach(kv => {
       const [k, v] = kv.split(': ');
       headers[k] = v;
     });
     const endpoint = headers.Location.split('//')[1];
-    this.log(`received advertisement from ${headers.id.slice(-6)}.`);
+    this.log.debug(`received advertisement from ${headers.id.slice(-6)}.`);
     this.buildDevice(endpoint, headers);
   }
 
-  buildDevice(endpoint, {
-    id,
-    model,
-    support,
-    ...props
-  }) {
+  buildDevice(endpoint, { id, model, support, ...props }) {
     const deviceId = id.slice(-6);
     const hidden = blacklist(deviceId, this.config);
     const features = support
@@ -106,34 +104,35 @@ class YeePlatform {
       accessory.context.did = id;
       accessory.context.model = model;
       this.devices[id] = accessory;
-      this.api.registerPlatformAccessories(
-        'homebridge-yeelight',
-        'yeelight',
-        [accessory],
-      );
+      this.api.registerPlatformAccessories('homebridge-yeelight', 'yeelight', [
+        accessory,
+      ]);
     }
 
     if (accessory.reachable) return;
 
-    // Add support for ceiling lamps with moonlight mode
-    if (features.includes('active_mode')) {
-      this.log(`device ${accessory.displayName} supports moonlight mode`);
+    const family = Object.values(MODELS).find(fam => model.startsWith(fam));
+
+    // Lamps that support moonlight mode
+    if ([MODELS.CEILING, MODELS.LAMP].includes(family)) {
+      this.log.debug(`device ${accessory.displayName} supports moonlight mode`);
       mixins.push(MoonlightMode(props));
     }
 
     if (features.includes('set_bright')) {
-      this.log(`device ${accessory.displayName} supports brightness`);
+      this.log.debug(`device ${accessory.displayName} supports brightness`);
       mixins.push(Brightness(props));
     }
 
     if (features.includes('set_hsv')) {
-      this.log(`device ${accessory.displayName} supports color`);
+      this.log.debug(`device ${accessory.displayName} supports color`);
       mixins.push(Color(props));
     }
 
-    // HomeKit specification does not allow temperature for color bulbs
-    if (features.includes('set_ct_abx') && !features.includes('set_hsv')) {
-      this.log(`device ${accessory.displayName} supports color temperature`);
+    if (features.includes('set_ct_abx')) {
+      this.log.debug(
+        `device ${accessory.displayName} supports color temperature`
+      );
       mixins.push(Temperature(props));
     }
 
