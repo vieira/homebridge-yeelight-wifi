@@ -1,4 +1,4 @@
-name: Semantic-release
+name: Release
 
 on: [push]
 
@@ -8,7 +8,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: npx semantic-release
+      - name: Semantic Release Action
+        uses: codfish/semantic-release-action@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
