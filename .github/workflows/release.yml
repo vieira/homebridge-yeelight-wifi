@@ -20,7 +20,7 @@ jobs:
       - name: Install semantic-release plugin
         uses: borales/actions-yarn@v2.0.0
         with:
-          cmd: add --no-save conventional-changelog-eslint
+          cmd: add conventional-changelog-eslint
       - name: Release
         uses: codfish/semantic-release-action@v1
         env:
