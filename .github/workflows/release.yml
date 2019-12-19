@@ -17,6 +17,7 @@ jobs:
         uses: borales/actions-yarn@v2.0.0
         with:
           cmd: install
+          cmd: install --no-save conventional-changelog-eslint
       - name: Release
         uses: codfish/semantic-release-action@v1
         env:
