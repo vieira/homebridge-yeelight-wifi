@@ -35,7 +35,7 @@
     "eslint": "^5.12.0",
     "eslint-plugin-import": "^2.14.0",
     "husky": ">=1",
-    "lint-staged": "^10.0.0-beta.8",
+    "lint-staged": "^10.0.0-beta.12",
     "prettier": "^1.19.1"
   },
   "engines": {
