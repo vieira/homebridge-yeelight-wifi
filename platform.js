@@ -47,18 +47,18 @@ class YeePlatform {
     this.api.on('didFinishLaunching', async () => {
       this.sock.on('message', this.handleMessage.bind(this));
       do {
-        log.debug('doing a round of proactive search for known devices.');
+        log('doing a round of proactive search for known devices.');
         this.search();
         // eslint-disable-next-line no-await-in-loop
         await sleep(15000);
       } while (Object.values(this.devices).some(x => !x.reachable));
 
-      log.debug('all known devices found, stopping proactive search.');
+      log('all known devices found, stopping proactive search.');
     });
   }
 
   configureAccessory(accessory) {
-    this.log.debug(`remembered device ${accessory.displayName}.`);
+    this.log(`remembered device ${accessory.displayName}.`);
     accessory.reachable = false;
     this.devices[accessory.context.did] = accessory;
   }
@@ -84,7 +84,7 @@ class YeePlatform {
       headers[k] = v;
     });
     const endpoint = headers.Location.split('//')[1];
-    this.log.debug(`received advertisement from ${headers.id.slice(-6)}.`);
+    this.log(`received advertisement from ${headers.id.slice(-6)}.`);
     this.buildDevice(endpoint, headers);
   }
 
@@ -115,24 +115,22 @@ class YeePlatform {
 
     // Lamps that support moonlight mode
     if ([MODELS.CEILING, MODELS.LAMP].includes(family)) {
-      this.log.debug(`device ${accessory.displayName} supports moonlight mode`);
+      this.log(`device ${accessory.displayName} supports moonlight mode`);
       mixins.push(MoonlightMode(props));
     }
 
     if (features.includes('set_bright')) {
-      this.log.debug(`device ${accessory.displayName} supports brightness`);
+      this.log(`device ${accessory.displayName} supports brightness`);
       mixins.push(Brightness(props));
     }
 
     if (features.includes('set_hsv')) {
-      this.log.debug(`device ${accessory.displayName} supports color`);
+      this.log(`device ${accessory.displayName} supports color`);
       mixins.push(Color(props));
     }
 
     if (features.includes('set_ct_abx')) {
-      this.log.debug(
-        `device ${accessory.displayName} supports color temperature`
-      );
+      this.log(`device ${accessory.displayName} supports color temperature`);
       mixins.push(Temperature(props));
     }
 
