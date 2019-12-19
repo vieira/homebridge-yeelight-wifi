@@ -1,9 +1,0 @@
-extends: airbnb-base
-rules:
-    func-names: off
-    no-param-reassign:
-        - error
-        - props: false
-    no-underscore-dangle: off
-    no-bitwise: off
-

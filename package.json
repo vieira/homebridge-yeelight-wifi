@@ -33,7 +33,6 @@
   "dependencies": {},
   "devDependencies": {
     "eslint": "^5.12.0",
-    "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
     "husky": ">=1",
     "lint-staged": "^10.0.0-beta.8",
@@ -46,6 +45,20 @@
   "scripts": {
     "format": "prettier --write \"**/*.{js,md}\"",
     "posttest": "npm run format"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 2019
+    },
+    "env": {
+      "node": true,
+      "es6": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:import/errors",
+      "plugin:import/warnings"
+    ]
   },
   "husky": {
     "hooks": {
