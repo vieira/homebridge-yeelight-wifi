@@ -14,7 +14,9 @@ jobs:
         with:
           node-version: 12
       - name: Install dependencies
-        run: yern
+        uses: borales/actions-yarn@v2.0.0
+        with:
+          cmd: install
       - name: Release
         uses: codfish/semantic-release-action@v1
         env:
