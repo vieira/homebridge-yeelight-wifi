@@ -976,10 +976,10 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
   integrity sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=
 
-lint-staged@^10.0.0-beta.8:
-  version "10.0.0-beta.8"
-  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-10.0.0-beta.8.tgz#9d7f746a249b75ea88eb74d28e534d9168f51d57"
-  integrity sha512-rIiPGp84O9xBGNnIG3Gkp0ghIBX+SdFFBjF5OgIsUEUUZLowyirULelKnQi/XEZnywwx4lyn9JIP5BHp6qpPbA==
+lint-staged@^10.0.0-beta.12:
+  version "10.0.0-beta.12"
+  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-10.0.0-beta.12.tgz#7fd204e4736a2b6990a4500ce3ca33fb9ab8151a"
+  integrity sha512-UovL5rt7zU7csGICq4ZyO0Uhl9D4lR3Uefr5KJZrv0BTMGITxVHSX34eI9asTE6maM+xciYhFscx0/+r08w8dQ==
   dependencies:
     chalk "^3.0.0"
     commander "^4.0.1"
