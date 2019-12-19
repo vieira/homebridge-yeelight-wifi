@@ -36,22 +36,24 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
     "husky": ">=1",
-    "lint-staged": ">=8"
+    "lint-staged": "^10.0.0-beta.8",
+    "prettier": "^1.19.1"
   },
   "engines": {
     "node": ">=7.6.0",
     "homebridge": ">=0.4.0"
   },
-  "scripts": {},
+  "scripts": {
+    "format": "prettier --write \"**/*.{js,md}\"",
+    "posttest": "npm run format"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
-    "*.js": [
-      "eslint --fix",
-      "git add"
-    ]
+    "*.js": "eslint --fix",
+    "*.{js,md}": "prettier --write"
   }
 }
