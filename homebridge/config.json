@@ -1,7 +1,7 @@
 {
   "bridge": {
     "name": "Yeelight Platform Development",
-    "username": "8C:85:90:8A:C7:83",
+    "username": "8C:85:90:8A:C7:84",
     "port": 51828
   },
   "description": "This is an configuration file for local development of the Yeelight platform plugin",
