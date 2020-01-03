@@ -43,6 +43,7 @@
     "homebridge": ">=0.4.0"
   },
   "scripts": {
+    "start": "DEBUG=Yeelight homebridge -D -R -P . -U ./homebridge",
     "format": "prettier --write \"**/*.{js,md}\"",
     "posttest": "npm run format"
   },
