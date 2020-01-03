@@ -4,7 +4,7 @@ const Brightness = require('./bulbs/brightness');
 const MoonlightMode = require('./bulbs/moonlight');
 const Color = require('./bulbs/color');
 const Temperature = require('./bulbs/temperature');
-const { name, blacklist, sleep, pipe } = require('./utils');
+const { getDeviceId, getName, blacklist, sleep, pipe } = require('./utils');
 
 const MODELS = {
   MONO: 'mono', // Color Temperature Bulb
@@ -84,23 +84,26 @@ class YeePlatform {
       headers[k] = v;
     });
     const endpoint = headers.Location.split('//')[1];
-    this.log(`received advertisement from ${headers.id.slice(-6)}.`);
+    this.log(`Received advertisement from ${getDeviceId(headers.id)}.`);
     this.buildDevice(endpoint, headers);
   }
 
   buildDevice(endpoint, { id, model, support, ...props }) {
-    const deviceId = id.slice(-6);
+    const deviceId = getDeviceId(id);
     const hidden = blacklist(deviceId, this.config);
     const features = support
       .split(' ')
       .concat(Object.keys(props))
       .filter(f => !hidden.includes(f));
+
     let accessory = this.devices[id];
-    const mixins = [];
+
+    const name = getName(`${model}-${getDeviceId(id)}`, this.config);
 
     if (!accessory) {
+      this.log(`Initializing new accessory ${id} with name ${name}...`);
       const uuid = global.UUIDGen.generate(id);
-      accessory = new global.Accessory(name(deviceId, this.config), uuid);
+      accessory = new global.Accessory(name, uuid);
       accessory.context.did = id;
       accessory.context.model = model;
       this.devices[id] = accessory;
@@ -109,38 +112,34 @@ class YeePlatform {
       ]);
     }
 
-    if (accessory.reachable) return;
+    if (accessory && accessory.initialized) return;
 
+    const mixins = [];
     const family = Object.values(MODELS).find(fam => model.startsWith(fam));
 
     // Lamps that support moonlight mode
     if ([MODELS.CEILING, MODELS.LAMP].includes(family)) {
-      this.log(`device ${accessory.displayName} supports moonlight mode`);
+      this.log(`Device ${name} supports moonlight mode`);
       mixins.push(MoonlightMode(props));
     }
 
     if (features.includes('set_bright')) {
-      this.log(`device ${accessory.displayName} supports brightness`);
+      this.log(`Device ${name} supports brightness`);
       mixins.push(Brightness(props));
     }
 
     if (features.includes('set_hsv')) {
-      this.log(`device ${accessory.displayName} supports color`);
+      this.log(`Device ${name} supports color`);
       mixins.push(Color(props));
     }
 
     if (features.includes('set_ct_abx')) {
-      this.log(`device ${accessory.displayName} supports color temperature`);
+      this.log(`Device ${name} supports color temperature`);
       mixins.push(Temperature(props));
     }
 
     const Bulb = class extends pipe(...mixins)(YeeBulb) {};
-    const device = new Bulb(id, model, this);
-    device.accessory = accessory;
-    device.endpoint = endpoint;
-    device.configureServices();
-    accessory.updateReachability(true);
-    this.log(`initialized device ${accessory.displayName} (${device.host}).`);
+    return new Bulb({ id, name, model, endpoint, accessory }, this);
   }
 }
 

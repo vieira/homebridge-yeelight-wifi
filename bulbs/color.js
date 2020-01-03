@@ -1,14 +1,44 @@
 const { isInteger } = Number;
 
-const Color = ({ hue: h, sat: s }) => (Device) => {
+const Color = ({ hue: h, sat: s }) => Device => {
   let hue;
   let sat;
 
   return class extends Device {
-    constructor(did, model, platform) {
-      super(did, model, platform);
+    constructor(props, platform) {
+      super(props, platform);
       this.hue = h;
       this.sat = s;
+
+      const { Hue, Saturation } = global.Characteristic;
+
+      (
+        this.service.getCharacteristic(Hue) ||
+        this.service.addCharacteristic(Hue)
+      )
+        .on('set', async (value, callback) => {
+          try {
+            await this.setColor(value, null);
+            callback(null, this.hue);
+          } catch (err) {
+            callback(err, this.hue);
+          }
+        })
+        .updateValue(this.hue);
+
+      (
+        this.service.getCharacteristic(Saturation) ||
+        this.service.addCharacteristic(Saturation)
+      )
+        .on('set', async (value, callback) => {
+          try {
+            await this.setColor(null, value);
+            callback(null, this.sat);
+          } catch (err) {
+            callback(err, this.sat);
+          }
+        })
+        .updateValue(this.sat);
     }
 
     get hue() {
@@ -57,12 +87,7 @@ const Color = ({ hue: h, sat: s }) => (Device) => {
       this.setPower(1);
       const req = {
         method: 'set_hsv',
-        params: [
-          hue,
-          sat,
-          'smooth',
-          transition,
-        ],
+        params: [hue, sat, 'smooth', transition],
       };
       return this.sendCmd(req).then(() => {
         this._hue = hue;
@@ -70,34 +95,6 @@ const Color = ({ hue: h, sat: s }) => (Device) => {
         hue = null;
         sat = null;
       });
-    }
-
-    configureServices() {
-      super.configureServices();
-
-      const { Hue, Saturation } = global.Characteristic;
-
-      (this.service.getCharacteristic(Hue)
-      || this.service.addCharacteristic(Hue))
-        .on('set', async (value, callback) => {
-          try {
-            await this.setColor(value, null);
-            callback(null, this.hue);
-          } catch (err) {
-            callback(err, this.hue);
-          }
-        }).updateValue(this.hue);
-
-      (this.service.getCharacteristic(Saturation)
-      || this.service.addCharacteristic(Saturation))
-        .on('set', async (value, callback) => {
-          try {
-            await this.setColor(null, value);
-            callback(null, this.sat);
-          } catch (err) {
-            callback(err, this.sat);
-          }
-        }).updateValue(this.sat);
     }
   };
 };
