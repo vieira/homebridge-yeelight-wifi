@@ -10,6 +10,7 @@ class YeeBulb {
     this.cmds = {};
     this.sock = null;
     this.accessory = accessory;
+    this.activeMode = 0; // We need to set a default activeMode since it's being used in brightness.js
     this.config = platform.config || {};
     this.endpoint = endpoint;
     const { retries = 5, timeout = 100 } = this.config.connection || {};

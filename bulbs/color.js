@@ -1,14 +1,14 @@
 const { isInteger } = Number;
 
-const Color = ({ hue: h, sat: s }) => Device => {
+const Color = Device => {
   let hue;
   let sat;
 
   return class extends Device {
     constructor(props, platform) {
       super(props, platform);
-      this.hue = h;
-      this.sat = s;
+      this.hue = props.hue;
+      this.sat = props.sat;
 
       const { Hue, Saturation } = global.Characteristic;
 
