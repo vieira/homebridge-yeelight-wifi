@@ -46,24 +46,27 @@ class YeePlatform {
     this.api = api;
     this.api.on('didFinishLaunching', async () => {
       this.sock.on('message', this.handleMessage.bind(this));
+      log(`Searching for known devices...`);
       do {
-        log('doing a round of proactive search for known devices.');
         this.search();
         // eslint-disable-next-line no-await-in-loop
         await sleep(15000);
-      } while (Object.values(this.devices).some(x => !x.reachable));
+      } while (
+        Object.values(this.devices).some(accessory => !accessory.initialized)
+      );
 
-      log('all known devices found, stopping proactive search.');
+      log(`All known devices found. Stopping proactive search.`);
     });
   }
 
   configureAccessory(accessory) {
-    this.log(`remembered device ${accessory.displayName}.`);
-    accessory.reachable = false;
+    this.log(`Loaded accessory ${accessory.displayName}.`);
+    accessory.initialized = false;
     this.devices[accessory.context.did] = accessory;
   }
 
   search() {
+    this.log('Sending search request...');
     this.sock.send(
       this.searchMessage,
       0,
