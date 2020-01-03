@@ -1,19 +1,60 @@
 const net = require('net');
-const { id, name, handle } = require('../utils');
+const { id, handle } = require('../utils');
 
 class YeeBulb {
-  constructor(did, model, platform) {
-    this.did = did;
+  constructor(props, platform) {
+    const { id, model, name, endpoint, accessory } = props;
+    this.did = id;
     this.model = model;
     this.log = platform.log;
     this.cmds = {};
     this.sock = null;
-    this.accessory = null;
+    this.accessory = accessory;
     this.config = platform.config || {};
-
+    this.endpoint = endpoint;
     const { retries = 5, timeout = 100 } = this.config.connection || {};
     this.retries = retries;
     this.timeout = timeout;
+
+    this.accessory
+      .getService(global.Service.AccessoryInformation)
+      .setCharacteristic(global.Characteristic.Manufacturer, 'YeeLight')
+      .setCharacteristic(global.Characteristic.Model, this.model)
+      .setCharacteristic(global.Characteristic.SerialNumber, this.did);
+
+    this.service =
+      this.accessory.getService(global.Service.Lightbulb) ||
+      this.accessory.addService(new global.Service.Lightbulb(name));
+
+    this.accessory.on('identify', async (_, callback) => {
+      await this.identify();
+      callback();
+    });
+
+    this.service
+      .getCharacteristic(global.Characteristic.On)
+      .on('set', async (value, callback) => {
+        try {
+          await this.setPower(value);
+          callback(null, value);
+        } catch (err) {
+          callback(err, this.power);
+        }
+      })
+      .on('get', async callback => {
+        try {
+          const [value] = await this.getProperty(['power']);
+          this.power = value;
+          callback(null, this.power);
+        } catch (err) {
+          callback(err, this.power);
+        }
+      })
+      .updateValue(this.power);
+
+    this.accessory.initialized = true;
+
+    this.log(`Initialized device ${name} (${this.endpoint}).`);
   }
 
   get endpoint() {
@@ -96,7 +137,12 @@ class YeeBulb {
   }
 
   identify() {
-    const req = { method: 'toggle', params: [] };
+    // Use flash notify effect when supported
+    // TODO: Check support for `start_cf`
+    const req = {
+      method: 'start_cf',
+      params: [10, 0, '500,2,0,10,500,2,0,100'],
+    };
     return this.sendCmd(req);
   }
 
@@ -110,12 +156,16 @@ class YeeBulb {
         // eslint-disable-next-line no-await-in-loop
         return await this._sendCmd(cmd, t);
       } catch (err) {
-        this.log.warn(`failed attempt ${i} after ${t}ms.`);
+        this.log.warn(
+          `${this.did}: failed communication attempt ${i} after ${t}ms.`
+        );
         if (err === 'EHOSTUNREACH') break;
       }
     }
     this.sock.destroy();
-    this.log.error(`failed to send cmd ${cmd.id} after ${retries} retries.`);
+    this.log.error(
+      `${this.did}: failed to send cmd ${cmd.id} after ${retries} retries.`
+    );
     return Promise.reject(new Error(`${cmd.id}`));
   }
 
@@ -168,46 +218,6 @@ class YeeBulb {
       this.updateStateFromProp(param, message.params[param]);
     });
     return true;
-  }
-
-  configureServices() {
-    const deviceId = this.did.slice(-6);
-    const deviceName = name(deviceId, this.config);
-    this.accessory
-      .getService(global.Service.AccessoryInformation)
-      .setCharacteristic(global.Characteristic.Manufacturer, 'YeeLight')
-      .setCharacteristic(global.Characteristic.Model, this.model)
-      .setCharacteristic(global.Characteristic.SerialNumber, this.host);
-
-    this.service =
-      this.accessory.getService(global.Service.Lightbulb) ||
-      this.accessory.addService(new global.Service.Lightbulb(deviceName));
-
-    this.accessory.on('identify', async (_, callback) => {
-      await this.identify();
-      callback();
-    });
-
-    this.service
-      .getCharacteristic(global.Characteristic.On)
-      .on('set', async (value, callback) => {
-        try {
-          await this.setPower(value);
-          callback(null, value);
-        } catch (err) {
-          callback(err, this.power);
-        }
-      })
-      .on('get', async callback => {
-        try {
-          const [value] = await this.getProperty(['power']);
-          this.power = value;
-          callback(null, this.power);
-        } catch (err) {
-          callback(err, this.power);
-        }
-      })
-      .updateValue(this.power);
   }
 }
 
