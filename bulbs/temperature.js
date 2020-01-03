@@ -1,8 +1,8 @@
-const Temperature = ({ ct }) => Device =>
+const Temperature = Device =>
   class extends Device {
     constructor(props, platform) {
       super(props, platform);
-      this.temperature = ct;
+      this.temperature = props.ct;
 
       const { ColorTemperature } = global.Characteristic;
 

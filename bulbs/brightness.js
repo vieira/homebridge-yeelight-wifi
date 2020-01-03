@@ -1,8 +1,8 @@
-const Brightness = ({ bright: b }) => Device =>
+const Brightness = Device =>
   class extends Device {
     constructor(props, platform) {
       super(props, platform);
-      this.bright = b;
+      this.bright = props.bright;
 
       (
         this.service.getCharacteristic(global.Characteristic.Brightness) ||

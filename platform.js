@@ -123,26 +123,26 @@ class YeePlatform {
     // Lamps that support moonlight mode
     if ([MODELS.CEILING, MODELS.LAMP].includes(family)) {
       this.log(`Device ${name} supports moonlight mode`);
-      mixins.push(MoonlightMode(props));
+      mixins.push(MoonlightMode);
     }
 
     if (features.includes('set_bright')) {
       this.log(`Device ${name} supports brightness`);
-      mixins.push(Brightness(props));
+      mixins.push(Brightness);
     }
 
     if (features.includes('set_hsv')) {
       this.log(`Device ${name} supports color`);
-      mixins.push(Color(props));
+      mixins.push(Color);
     }
 
     if (features.includes('set_ct_abx')) {
       this.log(`Device ${name} supports color temperature`);
-      mixins.push(Temperature(props));
+      mixins.push(Temperature);
     }
 
     const Bulb = class extends pipe(...mixins)(YeeBulb) {};
-    return new Bulb({ id, name, model, endpoint, accessory }, this);
+    return new Bulb({ id, name, model, endpoint, accessory, ...props }, this);
   }
 }
 

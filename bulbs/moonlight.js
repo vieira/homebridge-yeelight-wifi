@@ -3,14 +3,13 @@
  *  0 - Daylight mode |
  *  1 - Moonlight mode
  */
-
-// eslint-disable-next-line max-len
-const MoonlightMode = ({ bright: b, active_mode: activeMode = 0 }) => Device =>
+const MoonlightMode = Device =>
   class extends Device {
     constructor(props, platform) {
       super(props, platform);
-      this.bright = b;
-      this.activeMode = activeMode;
+      const { bright, active_mode } = props;
+      this.bright = bright;
+      this.activeMode = active_mode || 0;
 
       this.moonlightModeService =
         this.accessory.getService(global.Service.Switch) ||
