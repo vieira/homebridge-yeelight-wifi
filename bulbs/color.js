@@ -78,13 +78,13 @@ const Color = Device => {
       super.updateStateFromProp(prop, value);
     }
 
-    setColor(hv, sv) {
+    async setColor(hv, sv) {
       hue = isInteger(hue) ? hue : hv;
       sat = isInteger(sat) ? sat : sv;
       if (!isInteger(hue) || !isInteger(sat)) return Promise.resolve();
 
       const { color: transition = 1500 } = this.config.transitions || {};
-      this.setPower(1);
+      await this.setPower(1); // TODO: Why do we need to switch on the lamp here?
       const req = {
         method: 'set_hsv',
         params: [hue, sat, 'smooth', transition],
