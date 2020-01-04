@@ -7,15 +7,13 @@ const MoonlightMode = Device =>
   class extends Device {
     constructor(props, platform) {
       super(props, platform);
-      const { bright, active_mode, name } = props;
+      const { bright, active_mode } = props;
       this.bright = bright;
       this.activeMode = active_mode || 0;
 
       this.moonlightModeService =
         this.accessory.getService(global.Service.Switch) ||
-        this.accessory.addService(
-          new global.Service.Switch(`Moonlight Mode ${name}`)
-        );
+        this.accessory.addService(new global.Service.Switch(`Moonlight Mode`));
 
       this.moonlightModeService
         .getCharacteristic(global.Characteristic.On)
