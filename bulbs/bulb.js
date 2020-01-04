@@ -87,7 +87,7 @@ class YeeBulb {
       .updateValue(this.power);
   }
 
-  setPower(power) {
+  async setPower(power) {
     if (this.power === power) {
       return Promise.resolve(power);
     }
@@ -97,9 +97,8 @@ class YeeBulb {
       method: 'set_power',
       params: [state, 'smooth', transition],
     };
-    return this.sendCmd(req).then(() => {
-      this._power = power;
-    });
+    await this.sendCmd(req);
+    this._power = power;
   }
 
   connect() {
