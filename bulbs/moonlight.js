@@ -39,14 +39,17 @@ const MoonlightMode = Device =>
 
     async setMoonlightMode(state) {
       const { brightness: transition = 400 } = this.config.transitions || {};
-      this.log.debug(
-        `Setting ${state ? '🌙' : '☀️'} mode on device ${this.did}`
-      );
-      await this.sendCmd({
-        method: 'set_power',
-        params: ['on', 'smooth', transition, state ? 5 : 1],
-      });
-      this.activeMode = state ? 1 : 0;
+      // Only set the mode if it differs from the current one. Closes #68
+      if (state !== this.activeMode) {
+        this.log.debug(
+          `Setting ${state ? '🌙' : '☀️'} mode on device ${this.did}`
+        );
+        await this.sendCmd({
+          method: 'set_power',
+          params: ['on', 'smooth', transition, state ? 5 : 1],
+        });
+        this.activeMode = state ? 1 : 0;
+      }
     }
 
     updateStateFromProp(prop, value) {
