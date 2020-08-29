@@ -20,7 +20,7 @@ Implements [Yeelight WiFi Light Inter-Operation Specification](https://www.yeeli
 
 Devices that already have the API enabled should be autodiscovered without any other actions on your part.
 
-However, out of the factory, the YeeLight devices do come with the API disabled and you will have to enable it for them to work with Homebridge. To do so, go to settings and enable **Developer Mode**.
+However, out of the factory, the YeeLight devices do come with the API disabled, and you will have to enable it for them to work with Homebridge. To do so, go to settings and enable **Developer Mode**.
 
 ## Configuration (minimal)
 
@@ -93,13 +93,13 @@ Feature requests and specially pull requests are very welcome.
 
 ## Developing
 
-During development run hombridge locally in debug mode unsing the following command:
+During development run Homebridge locally in debug mode using the following command:
 
 ```bash
-DEBUG=* homebridge -D -R -P . -U ./homebridge
+yarn start
 ```
 
-This will run testing instance of homebridge in the plugin directory so it won't mess up your normal homebridge installation.
+This will run testing instance of Homebridge in the plugin directory, so it won't mess up your normal Homebridge installation.
 
 Add it as a separate bridge in the Home.app (+ Add Accessory).
 
