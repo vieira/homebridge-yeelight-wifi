@@ -12,7 +12,12 @@ const Temperature = Device =>
       )
         .on('set', async (value, callback) => {
           try {
-            await this.setTemperature(value);
+            /* In moonlight mode do not attempt to change the temperature
+             * on device since it will switch it back to daylight mode
+             */
+            if (this.activeMode === 0) {
+              await this.setTemperature(value);
+            }
             callback(null, value);
           } catch (err) {
             callback(err, this.temperature);
@@ -23,6 +28,17 @@ const Temperature = Device =>
           maxValue: this.model.startsWith('bslamp') ? 588 : 370, // ~1700K or ~2700K
         })
         .updateValue(this.temperature);
+
+      // Setup the adaptive lighting controller if available
+      if (
+        platform.api.versionGreaterOrEqual &&
+        platform.api.versionGreaterOrEqual('1.3.0-beta.23')
+      ) {
+        this.alController = new platform.api.hap.AdaptiveLightingController(
+          this.service
+        );
+        this.accessory.configureController(this.alController);
+      }
     }
 
     get temperature() {
