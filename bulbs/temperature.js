@@ -56,7 +56,7 @@ const Temperature = Device =>
     }
 
     async setTemperature(mired) {
-      const { temperature: transition = 1500 } = this.config.transitions || {};
+      const { temperature: transition = 400 } = this.config.transitions || {};
       const kelvin = 10 ** 6 / mired;
       const req = {
         method: 'set_ct_abx',

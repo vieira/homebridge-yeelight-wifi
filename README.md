@@ -54,8 +54,8 @@ The following parameters can be changed in case you need to change the defaults.
       "transitions": {
         "power": 400,
         "brightness": 400,
-        "color": 1500,
-        "temperature": 1500
+        "color": 400,
+        "temperature": 400
       },
       "connection": {
         "retries": 5,

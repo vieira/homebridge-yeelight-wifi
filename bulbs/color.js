@@ -83,7 +83,7 @@ const Color = Device => {
       sat = isInteger(sat) ? sat : sv;
       if (!isInteger(hue) || !isInteger(sat)) return Promise.resolve();
 
-      const { color: transition = 1500 } = this.config.transitions || {};
+      const { color: transition = 400 } = this.config.transitions || {};
       await this.setPower(1); // TODO: Why do we need to switch on the lamp here?
       const req = {
         method: 'set_hsv',
