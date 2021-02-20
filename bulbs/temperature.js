@@ -20,9 +20,8 @@ const Temperature = Device =>
               callback(null, value);
             } else {
               platform.log.debug(
-                `Device ${this.did} activeMode is ${this.activeMode}. Skipping setting temperature in moonlight mode and disabling adaptive lighting.`
+                `Device ${this.did} activeMode is ${this.activeMode}. Skipping setting temperature in moonlight mode.`
               );
-              this.alController.disableAdaptiveLighting();
               callback(null, this.temperature);
             }
           } catch (err) {
