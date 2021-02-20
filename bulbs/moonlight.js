@@ -9,7 +9,7 @@ const MoonlightMode = Device =>
       super(props, platform);
       const { bright, active_mode } = props;
       this.bright = bright;
-      this.activeMode = active_mode || 0;
+      this.activeMode = Number(active_mode) || 0;
 
       this.moonlightModeService =
         this.accessory.getService(global.Service.Switch) ||
@@ -28,7 +28,7 @@ const MoonlightMode = Device =>
         .on('get', async callback => {
           try {
             const [value] = await this.getProperty(['active_mode']);
-            this.activeMode = value;
+            this.activeMode = Number(value);
             callback(null, this.activeMode);
           } catch (err) {
             callback(err, this.activeMode);
