@@ -17,15 +17,15 @@ const Temperature = Device =>
              */
             if (this.activeMode === 0) {
               await this.setTemperature(value);
-              callback(null, value);
+              callback(null);
             } else {
               platform.log.debug(
                 `Device ${this.did} activeMode is ${this.activeMode}. Skipping setting temperature in moonlight mode.`
               );
-              callback(null, this.temperature);
+              callback(null);
             }
           } catch (err) {
-            callback(err, this.temperature);
+            callback(err);
           }
         })
         .setProps({

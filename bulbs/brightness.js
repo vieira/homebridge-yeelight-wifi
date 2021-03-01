@@ -11,9 +11,9 @@ const Brightness = Device =>
         .on('set', async (value, callback) => {
           try {
             await this.setBrightness(value);
-            callback(null, value);
+            callback(null);
           } catch (err) {
-            callback(err, this.bright);
+            callback(err);
           }
         })
         .updateValue(this.bright);

@@ -20,9 +20,9 @@ const MoonlightMode = Device =>
         .on('set', async (value, callback) => {
           try {
             await this.setMoonlightMode(value);
-            callback(null, this.activeMode);
+            callback(null);
           } catch (err) {
-            callback(err, this.activeMode);
+            callback(err);
           }
         })
         .on('get', async callback => {
