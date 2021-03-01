@@ -37,9 +37,9 @@ class YeeBulb {
       .on('set', async (value, callback) => {
         try {
           await this.setPower(value);
-          callback(null, value);
+          callback(null);
         } catch (err) {
-          callback(err, this.power);
+          callback(err);
         }
       })
       .on('get', async callback => {

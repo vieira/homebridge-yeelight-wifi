@@ -19,9 +19,9 @@ const Color = Device => {
         .on('set', async (value, callback) => {
           try {
             await this.setColor(value, null);
-            callback(null, this.hue);
+            callback(null);
           } catch (err) {
-            callback(err, this.hue);
+            callback(err);
           }
         })
         .updateValue(this.hue);
@@ -33,9 +33,9 @@ const Color = Device => {
         .on('set', async (value, callback) => {
           try {
             await this.setColor(null, value);
-            callback(null, this.sat);
+            callback(null);
           } catch (err) {
-            callback(err, this.sat);
+            callback(err);
           }
         })
         .updateValue(this.sat);
