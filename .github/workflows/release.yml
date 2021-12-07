@@ -14,11 +14,11 @@ jobs:
         with:
           node-version: 12
       - name: Install dependencies
-        uses: borales/actions-yarn@v2.0.0
+        uses: borales/actions-yarn@v2.3.0
         with:
           cmd: install
       - name: Install semantic-release plugin
-        uses: borales/actions-yarn@v2.0.0
+        uses: borales/actions-yarn@v2.3.0
         with:
           cmd: add conventional-changelog-eslint
       - name: Release
