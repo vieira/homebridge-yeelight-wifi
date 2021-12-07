@@ -39,7 +39,7 @@
     "prettier": "^2.5.1"
   },
   "engines": {
-    "node": ">=7.6.0",
+    "node": ">=12.22.0",
     "homebridge": ">=0.4.0"
   },
   "scripts": {
