@@ -11,6 +11,7 @@ const MODELS = {
   COLOR: 'color', // RGB Bulb
   STRIPE: 'stripe', // LED Stripe
   CEILING: 'ceiling', // Ceiling lights
+  CEILC: 'ceilc', // Ceiling light Yeelight 450c
   BSLAMP: 'bslamp', // Bed side lamp
   LAMP: 'lamp', // Star Lamp etc.
 };
@@ -121,7 +122,7 @@ class YeePlatform {
     const family = Object.values(MODELS).find(fam => model.startsWith(fam));
 
     // Lamps that support moonlight mode
-    if ([MODELS.CEILING, MODELS.LAMP].includes(family)) {
+    if ([MODELS.CEILING, MODELS.LAMP, MODELS.CEILC].includes(family)) {
       this.log(`Device ${name} supports moonlight mode`);
       mixins.push(MoonlightMode);
     }
