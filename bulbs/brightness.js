@@ -27,7 +27,7 @@ const Brightness = Device =>
       this._bright = Number(bright);
     }
 
-    setBrightness(brightness) {
+    async setBrightness(brightness) {
       const { brightness: transition = 400 } = this.config.transitions || {};
       if (brightness > 0) {
         await this.setPower(1);
