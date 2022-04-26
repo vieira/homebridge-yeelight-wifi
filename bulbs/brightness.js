@@ -29,9 +29,7 @@ const Brightness = Device =>
 
     async setBrightness(brightness) {
       const { brightness: transition = 400 } = this.config.transitions || {};
-      if (brightness > 0) {
-        await this.setPower(1);
-      }
+      await this.setPower(1);
       const req = {
         method: 'set_bright',
         params: [Math.max(brightness, 1), 'smooth', transition],
