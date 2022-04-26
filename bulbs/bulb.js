@@ -157,7 +157,7 @@ class YeeBulb {
         // eslint-disable-next-line no-await-in-loop
         return await this._sendCmd(cmd, t);
       } catch (err) {
-        this.log.warn(
+        this.log.debug(
           `${this.did}: failed communication attempt ${i} after ${t}ms.`
         );
         if (err === 'EHOSTUNREACH') break;
