@@ -147,6 +147,7 @@ class YeeBulb {
   }
 
   async sendCmd(cmd) {
+    this.log.info(`Sending command: ${cmd}`)
     const { retries, timeout } = this;
     cmd.id = id.next().value;
     for (let i = 0; i <= retries; i += 1) {
