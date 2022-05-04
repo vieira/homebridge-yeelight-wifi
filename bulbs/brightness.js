@@ -27,8 +27,9 @@ const Brightness = Device =>
       this._bright = Number(bright);
     }
 
-    setBrightness(brightness) {
+    async setBrightness(brightness) {
       const { brightness: transition = 400 } = this.config.transitions || {};
+      await this.setPower(1); // Commands can be dropped if bulb is not turned on first
       const req = {
         method: 'set_bright',
         params: [Math.max(brightness, 1), 'smooth', transition],
