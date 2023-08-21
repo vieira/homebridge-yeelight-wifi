@@ -53,7 +53,7 @@ class YeePlatform {
         // eslint-disable-next-line no-await-in-loop
         await sleep(15000);
       } while (
-        Object.values(this.devices).some(accessory => !accessory.initialized)
+        Object.values(this.devices).some((accessory) => !accessory.initialized)
       );
 
       log(`All known devices found. Stopping proactive search.`);
@@ -83,7 +83,7 @@ class YeePlatform {
 
     if (method.startsWith('M-SEARCH')) return;
 
-    kvs.forEach(kv => {
+    kvs.forEach((kv) => {
       const [k, v] = kv.split(': ');
       headers[k] = v;
     });
@@ -94,15 +94,29 @@ class YeePlatform {
 
   buildDevice(endpoint, { id, model, support, ...props }) {
     const deviceId = getDeviceId(id);
+    const name = getName(`${model}-${deviceId}`, this.config);
     const hidden = blacklist(deviceId, this.config);
+    let accessory = this.devices[id];
+
+    if (hidden === true) {
+      this.log.debug(`Device ${name} is blacklisted, ignoring...`);
+      try {
+        delete this.devices[id];
+        this.api.unregisterPlatformAccessories(
+          'homebridge-yeelight',
+          'yeelight',
+          [accessory]
+        );
+        this.log(`Device ${name} was unregistered`);
+        // eslint-disable-next-line no-empty
+      } catch (_) {}
+      return;
+    }
+
     const features = support
       .split(' ')
       .concat(Object.keys(props))
-      .filter(f => !hidden.includes(f));
-
-    let accessory = this.devices[id];
-
-    const name = getName(`${model}-${getDeviceId(id)}`, this.config);
+      .filter((f) => !hidden.includes(f));
 
     if (!accessory) {
       this.log(`Initializing new accessory ${id} with name ${name}...`);
@@ -119,7 +133,7 @@ class YeePlatform {
     if (accessory && accessory.initialized) return;
 
     const mixins = [];
-    const family = Object.values(MODELS).find(fam => model.startsWith(fam));
+    const family = Object.values(MODELS).find((fam) => model.startsWith(fam));
 
     // Lamps that support moonlight mode
     if ([MODELS.CEILING, MODELS.LAMP, MODELS.CEILC].includes(family)) {

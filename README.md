@@ -39,7 +39,7 @@ Add the following to your homebridge config:
 
 ## Configuration (Optional)
 
-The following parameters can be changed in case you need to change the defaults.
+The following parameters can be changed in case you need to change the defaults. The `blacklist` key can be an array of capabilities you do not want to expose to HomeKit or `true` to not expose the device at all.
 
 ```json
 {
