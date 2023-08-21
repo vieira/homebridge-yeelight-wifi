@@ -1,4 +1,4 @@
-const Temperature = Device =>
+const Temperature = (Device) =>
   class extends Device {
     constructor(props, platform) {
       super(props, platform);
@@ -47,11 +47,11 @@ const Temperature = Device =>
     }
 
     get temperature() {
-      return this._temperature - 1;
+      return this._temperature;
     }
 
     set temperature(kelvin) {
-      this._temperature = 10 ** 6 / Number(kelvin);
+      this._temperature = Math.floor(10 ** 6 / Number(kelvin));
     }
 
     async setTemperature(mired) {
