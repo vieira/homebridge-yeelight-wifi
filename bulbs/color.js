@@ -84,7 +84,7 @@ const Color = Device => {
       if (!isInteger(hue) || !isInteger(sat)) return Promise.resolve();
 
       const { color: transition = 400 } = this.config.transitions || {};
-      await this.setPower(1); // Commands can be dropped if bulb is not turned on first
+      await this.setPower(true); // Commands can be dropped if bulb is not turned on first
       const req = {
         method: 'set_hsv',
         params: [hue, sat, 'smooth', transition],

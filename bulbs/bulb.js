@@ -51,7 +51,7 @@ class YeeBulb {
           callback(err, this.power);
         }
       })
-      .updateValue(!!this.power);
+      .updateValue(this.power);
 
     this.accessory.initialized = true;
 
@@ -69,11 +69,11 @@ class YeeBulb {
   }
 
   get power() {
-    return this._power;
+    return !!this._power;
   }
 
   set power(state) {
-    this._power = state === 'on' ? 1 : 0;
+    this._power = state === 'on' ? true : false;
   }
 
   updateStateFromProp(prop, value) {
@@ -98,7 +98,7 @@ class YeeBulb {
       params: [state, 'smooth', transition],
     };
     await this.sendCmd(req);
-    this._power = power;
+    this.power = state;
   }
 
   connect() {
