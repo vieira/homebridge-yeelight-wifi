@@ -32,17 +32,18 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^8.4.1",
-    "eslint-plugin-import": "^2.25.3",
-    "husky": ">=1",
-    "lint-staged": "^12.1.2",
-    "prettier": "^2.5.1"
+    "eslint": "^8.47.0",
+    "eslint-plugin-import": "^2.28.1",
+    "husky": ">=8.0.3",
+    "lint-staged": "^14.0.0",
+    "prettier": "^3.0.2"
   },
   "engines": {
     "node": ">=12.22.0",
     "homebridge": ">=0.4.0"
   },
   "scripts": {
+    "prepare": "husky install",
     "start": "DEBUG=Yeelight homebridge -D -R -P . -U ./homebridge",
     "format": "prettier --write \"**/*.{js,md}\"",
     "posttest": "npm run format"
