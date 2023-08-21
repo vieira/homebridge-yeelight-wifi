@@ -51,7 +51,7 @@ class YeeBulb {
           callback(err, this.power);
         }
       })
-      .updateValue(this.power);
+      .updateValue(!!this.power);
 
     this.accessory.initialized = true;
 
