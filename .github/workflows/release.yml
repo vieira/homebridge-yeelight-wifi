@@ -22,7 +22,7 @@ jobs:
         with:
           cmd: add conventional-changelog-eslint
       - name: Release
-        uses: codfish/semantic-release-action@v1
+        uses: codfish/semantic-release-action@v2.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
