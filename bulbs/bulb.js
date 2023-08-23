@@ -42,7 +42,7 @@ class YeeBulb {
           callback(err);
         }
       })
-      .on('get', async callback => {
+      .on('get', async (callback) => {
         try {
           const [value] = await this.getProperty(['power', 'active_mode']);
           this.power = value;
@@ -118,12 +118,12 @@ class YeeBulb {
         handle([this.responseHandler.bind(this), this.stateHandler.bind(this)])
       );
 
-      this.sock.on('error', error => {
+      this.sock.on('error', (error) => {
         this.log.error(`${this.host}: ${error.message}.`);
         reject(error.code);
       });
 
-      this.sock.on('close', hadError => {
+      this.sock.on('close', (hadError) => {
         this.log.warn(`${this.host} closed. error? ${hadError}.`);
         this.cmds = {};
         reject(new Error(`close: error? ${hadError}`));
@@ -147,7 +147,7 @@ class YeeBulb {
   }
 
   async sendCmd(cmd) {
-    this.log.info(`Sending command: ${JSON.stringify(cmd)}`)
+    this.log.info(`Sending command: ${JSON.stringify(cmd)}`);
     const { retries, timeout } = this;
     cmd.id = id.next().value;
     for (let i = 0; i <= retries; i += 1) {
@@ -171,22 +171,25 @@ class YeeBulb {
   }
 
   _sendCmd(cmd, duration) {
-    return new Promise(async (resolve, reject) => {
+    const _connect = async () => {
       if (!this.sock || this.sock.destroyed) {
-        try {
-          await this.connect();
-        } catch (err) {
-          reject(err);
-        }
+        await this.connect();
       }
-      const msg = JSON.stringify(cmd);
-      const timeout = setTimeout(() => {
-        reject(new Error(`${cmd.id}`));
-        delete this.cmds[cmd.id];
-      }, duration);
-      this.sock.write(msg + global.EOL);
-      this.cmds[cmd.id] = { resolve, reject, timeout };
-      this.log.debug(msg);
+    };
+
+    return new Promise((resolve, reject) => {
+      _connect()
+        .catch(reject)
+        .then(() => {
+          const msg = JSON.stringify(cmd);
+          const timeout = setTimeout(() => {
+            reject(new Error(`${cmd.id}`));
+            delete this.cmds[cmd.id];
+          }, duration);
+          this.sock.write(msg + global.EOL);
+          this.cmds[cmd.id] = { resolve, reject, timeout };
+          this.log.debug(msg);
+        });
     });
   }
 
@@ -215,7 +218,7 @@ class YeeBulb {
     if (!('method' in message && message.method === 'props')) {
       return false;
     }
-    Object.keys(message.params).forEach(param => {
+    Object.keys(message.params).forEach((param) => {
       this.updateStateFromProp(param, message.params[param]);
     });
     return true;
