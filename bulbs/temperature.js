@@ -8,33 +8,32 @@ const Temperature = (Device) =>
       this.controller = {};
 
       const { ColorTemperature } = global.Characteristic;
+      const [minValue, maxValue] = props.limits.colorTemperature;
 
       (
         this.service.getCharacteristic(ColorTemperature) ||
         this.service.addOptionalCharacteristic(ColorTemperature)
       )
         .on('set', async (value, callback) => {
+          // In moonlight mode (1) do not attempt to change the temperature
+          // since it would switch the device to daylight mode (0)
+          if (this.activeMode === 1) {
+            this.log.debug(
+              `Device ${this.name} is in moonlight mode.`,
+              'Skipping setting temperature.'
+            );
+            callback(null);
+            return;
+          }
+
           try {
-            /* In moonlight mode do not attempt to change the temperature
-             * on device since it will switch it back to daylight mode
-             */
-            if (this.activeMode === 0) {
-              await this.setTemperature(value);
-              callback(null);
-            } else {
-              platform.log.debug(
-                `Device ${this.did} activeMode is ${this.activeMode}. Skipping setting temperature in moonlight mode.`
-              );
-              callback(null);
-            }
+            await this.setTemperature(value);
+            callback(null);
           } catch (err) {
             callback(err);
           }
         })
-        .setProps({
-          minValue: 154, // ~6500K
-          maxValue: this.model.startsWith('bslamp') ? 588 : 370, // ~1700K or ~2700K
-        })
+        .setProps({ minValue, maxValue })
         .updateValue(this.temperature);
 
       // Setup the adaptive lighting controller if available

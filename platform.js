@@ -1,20 +1,11 @@
 const dgram = require('dgram');
+const devices = require('./devices.json');
 const YeeBulb = require('./bulbs/bulb');
 const Brightness = require('./bulbs/brightness');
 const MoonlightMode = require('./bulbs/moonlight');
 const Color = require('./bulbs/color');
 const Temperature = require('./bulbs/temperature');
 const { getDeviceId, getName, blacklist, sleep, pipe } = require('./utils');
-
-const MODELS = {
-  MONO: 'mono', // Color Temperature Bulb
-  COLOR: 'color', // RGB Bulb
-  STRIPE: 'stripe', // LED Stripe
-  CEILING: 'ceiling', // Ceiling lights
-  CEILC: 'ceilc', // Ceiling light Yeelight 450c
-  BSLAMP: 'bslamp', // Bed side lamp
-  LAMP: 'lamp', // Star Lamp etc.
-};
 
 class YeePlatform {
   constructor(log, config, api) {
@@ -133,10 +124,10 @@ class YeePlatform {
     if (accessory && accessory.initialized) return;
 
     const mixins = [];
-    const family = Object.values(MODELS).find((fam) => model.startsWith(fam));
+    const limits = devices[model] || devices['default'];
 
     // Lamps that support moonlight mode
-    if ([MODELS.CEILING, MODELS.LAMP, MODELS.CEILC].includes(family)) {
+    if (features.includes('active_mode')) {
       this.log(`Device ${name} supports moonlight mode`);
       mixins.push(MoonlightMode);
     }
@@ -157,7 +148,7 @@ class YeePlatform {
     }
 
     const Bulb = class extends pipe(...mixins)(YeeBulb) {};
-    return new Bulb({ id, name, model, endpoint, accessory, ...props }, this);
+    return new Bulb({ id, model, endpoint, accessory, limits, ...props }, this);
   }
 }
 
