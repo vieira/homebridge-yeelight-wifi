@@ -28,8 +28,7 @@ class YeePlatform {
       this.sock.setBroadcast(true);
       this.sock.setMulticastTTL(128);
       this.sock.addMembership(this.addr);
-      const multicastInterface =
-        config && config.multicast && config.multicast.interface;
+      const multicastInterface = config?.multicast?.interface;
       if (multicastInterface) {
         this.sock.setMulticastInterface(multicastInterface);
       }
@@ -121,7 +120,7 @@ class YeePlatform {
       ]);
     }
 
-    if (accessory && accessory.initialized) return;
+    if (accessory?.initialized) return;
 
     const mixins = [];
     const limits = devices[model] || devices['default'];
