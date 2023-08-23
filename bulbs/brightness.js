@@ -42,10 +42,9 @@ const Brightness = Device =>
     updateStateFromProp(prop, value) {
       // There are different props being used for brightness
       // depending on the active_mode in Ceiling lamps
-      if (
-        (this.activeMode === 0 && prop === 'bright') ||
-        (this.activeMode === 1 && prop === 'nl_br')
-      ) {
+      if (prop === 'bright' && this.activeMode === 1) return;
+      if (prop === 'nl_br' && this.activeMode !== 1) return;
+      if (['bright', 'nl_br'].includes(prop)) {
         this.bright = value;
         this.service
           .getCharacteristic(global.Characteristic.Brightness)

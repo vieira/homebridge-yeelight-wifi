@@ -3,14 +3,14 @@ const { id, handle } = require('../utils');
 
 class YeeBulb {
   constructor(props, platform) {
-    const { id, model, name, endpoint, accessory } = props;
+    const { id, model, endpoint, accessory } = props;
     this.did = id;
+    this.name = accessory.displayName;
     this.model = model;
     this.log = platform.log;
     this.cmds = {};
     this.sock = null;
     this.accessory = accessory;
-    this.activeMode = 0; // We need to set a default activeMode since it's being used in brightness.js
     this.config = platform.config || {};
     this.endpoint = endpoint;
     const { retries = 5, timeout = 100 } = this.config.connection || {};
@@ -25,7 +25,7 @@ class YeeBulb {
 
     this.service =
       this.accessory.getService(global.Service.Lightbulb) ||
-      this.accessory.addService(new global.Service.Lightbulb(name));
+      this.accessory.addService(new global.Service.Lightbulb(this.name));
 
     this.accessory.on('identify', async (_, callback) => {
       await this.identify();
@@ -44,7 +44,7 @@ class YeeBulb {
       })
       .on('get', async callback => {
         try {
-          const [value] = await this.getProperty(['power']);
+          const [value] = await this.getProperty(['power', 'active_mode']);
           this.power = value;
           callback(null, this.power);
         } catch (err) {
@@ -55,7 +55,7 @@ class YeeBulb {
 
     this.accessory.initialized = true;
 
-    this.log(`Initialized device ${name} (${this.endpoint}).`);
+    this.log(`Initialized device ${this.name} (${this.endpoint}).`);
   }
 
   get endpoint() {
@@ -89,7 +89,7 @@ class YeeBulb {
 
   async setPower(power) {
     if (this.power === power) {
-      return Promise.resolve(power);
+      return power;
     }
     const { power: transition = 400 } = this.config.transitions || {};
     const state = power ? 'on' : 'off';

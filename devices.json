@@ -1,0 +1,11 @@
+{
+  "bslamp": {
+    "colorTemperature": [154, 588]
+  },
+  "color5": {
+    "colorTemperature": [154, 588]
+  },
+  "default": {
+    "colorTemperature": [154, 370]
+  }
+}
