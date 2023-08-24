@@ -7,6 +7,7 @@ const Color = require('./bulbs/color');
 const Temperature = require('./bulbs/temperature');
 const Backlight = require('./bulbs/backlight/bulb');
 const BacklightBrightness = require('./bulbs/backlight/brightness');
+const BacklightColor = require('./bulbs/backlight/color');
 const { getDeviceId, getName, blacklist, sleep, pipe } = require('./utils');
 
 class YeePlatform {
@@ -156,6 +157,11 @@ class YeePlatform {
     if (features.includes('bg_set_bright')) {
       this.log(`Device ${name} supports backlight brightness`);
       mixins.push(BacklightBrightness);
+    }
+
+    if (features.includes('bg_set_hsv')) {
+      this.log(`Device ${name} supports backlight color`);
+      mixins.push(BacklightColor);
     }
 
     const Bulb = class extends pipe(...mixins)(YeeBulb) {};
