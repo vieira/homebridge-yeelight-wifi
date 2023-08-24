@@ -27,6 +27,8 @@ class YeeBulb {
       this.accessory.getService(global.Service.Lightbulb) ||
       this.accessory.addService(new global.Service.Lightbulb(this.name));
 
+    this.service.setPrimaryService();
+
     this.accessory.on('identify', async (_, callback) => {
       await this.identify();
       callback();
@@ -44,7 +46,7 @@ class YeeBulb {
       })
       .on('get', async (callback) => {
         try {
-          const [value] = await this.getProperty(['power', 'active_mode']);
+          const [value] = await this.getProperty(['power']);
           this.power = value;
           callback(null, this.power);
         } catch (err) {
