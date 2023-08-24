@@ -60,3 +60,5 @@ typings/
 # homebridge
 /homebridge/accessories
 /homebridge/persist
+
+debug
