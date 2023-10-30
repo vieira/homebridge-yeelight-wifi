@@ -94,7 +94,7 @@ class YeePlatform {
 
   buildDevice(endpoint, { id, model, support, ...props }) {
     const deviceId = getDeviceId(id);
-    const name = getName(`${model}-${deviceId}`, this.config);
+    const name = getName(deviceId, this.config);
     const hidden = blacklist(deviceId, this.config);
     let accessory = this.devices[id];
 
