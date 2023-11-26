@@ -128,9 +128,7 @@ class YeePlatform {
     const mixins = [];
     const limits = devices[model] || devices['default'];
 
-    // Lamps that support moonlight mode
-    if (features.includes('active_mode')) {
-      this.log(`Device ${name} supports moonlight mode`);
+    if (!hidden.includes('active_mode')) {
       mixins.push(MoonlightMode);
     }
 
