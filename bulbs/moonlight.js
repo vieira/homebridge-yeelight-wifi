@@ -1,15 +1,19 @@
-/** Support for "moonlight" mode for ceiling lamps
- * active_mode:
- *  0 - Daylight mode |
- *  1 - Moonlight mode
- */
-const MoonlightMode = Device =>
+const DAYLIGHT_MODE = 0;
+const MOONLIGHT_MODE = 1;
+
+const MoonlightMode = (Device) =>
   class extends Device {
     constructor(props, platform) {
       super(props, platform);
-      const { bright, active_mode } = props;
-      this.bright = bright;
-      this.activeMode = Number(active_mode) || 0;
+      this.initMoonlight();
+    }
+
+    async initMoonlight() {
+      const [activeMode] = await this.getProperty(['active_mode']);
+      if (!activeMode) return;
+
+      this.log(`Device ${this.name} supports moonlight mode`);
+      this.activeMode = Number(activeMode) || DAYLIGHT_MODE;
 
       this.moonlightModeService =
         this.accessory.getService(global.Service.Switch) ||
@@ -25,7 +29,7 @@ const MoonlightMode = Device =>
             callback(err);
           }
         })
-        .on('get', async callback => {
+        .on('get', async (callback) => {
           try {
             const [value] = await this.getProperty(['active_mode']);
             this.activeMode = Number(value);
@@ -40,13 +44,13 @@ const MoonlightMode = Device =>
     async setMoonlightMode(state) {
       const { brightness: transition = 400 } = this.config.transitions || {};
       this.log.debug(
-        `Setting ${state ? '🌙' : '☀️'} mode on device ${this.did}`
+        `Setting ${state ? 'moon' : 'day'}light mode on device ${this.did}`
       );
       await this.sendCmd({
         method: 'set_power',
         params: ['on', 'smooth', transition, state ? 5 : 1],
       });
-      this.activeMode = state ? 1 : 0;
+      this.activeMode = state ? MOONLIGHT_MODE : DAYLIGHT_MODE;
     }
 
     updateStateFromProp(prop, value) {
@@ -54,7 +58,7 @@ const MoonlightMode = Device =>
         this.activeMode = value;
         this.moonlightModeService
           .getCharacteristic(global.Characteristic.On)
-          .updateValue(this.activeMode === 1);
+          .updateValue(this.activeMode === MOONLIGHT_MODE);
         return;
       }
 
