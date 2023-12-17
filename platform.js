@@ -3,6 +3,7 @@ const devices = require('./devices.json');
 const YeeBulb = require('./bulbs/bulb');
 const Brightness = require('./bulbs/brightness');
 const MoonlightMode = require('./bulbs/moonlight');
+const ColorFlowMode = require('./bulbs/colorflow');
 const Color = require('./bulbs/color');
 const Temperature = require('./bulbs/temperature');
 const Backlight = require('./bulbs/backlight/bulb');
@@ -130,6 +131,10 @@ class YeePlatform {
 
     if (!hidden.includes('active_mode')) {
       mixins.push(MoonlightMode);
+    }
+
+    if (!hidden.includes('flowing')) {
+      mixins.push(ColorFlowMode);
     }
 
     if (features.includes('set_bright')) {
