@@ -16,8 +16,8 @@ const ColorFlowMode = (Device) =>
       this.flowing = Number(flowing) || COLOR_FLOW_DISABLED;
 
       this.colorFlowService =
-        this.accessory.getService(`Color Flow Mode`) ||
-        this.accessory.addService(new global.Service.Switch(`Color Flow Mode`));
+        this.accessory.getService('color_flow') ||
+        this.accessory.addService(new global.Service.Switch('Color Flow Mode', 'color_flow'));
 
       this.colorFlowService
         .getCharacteristic(global.Characteristic.On)
