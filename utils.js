@@ -451,7 +451,7 @@ const colorFromTemperature = (mired) => {
   ]);
 
   const temperature = Math.round(Math.min(Math.max(mired, 100), 500));
-  const [hue, sat] = lookupTable.get(temperature);
+  const [sat, hue] = lookupTable.get(temperature);
   return { hue: Math.round(hue), sat: Math.round(sat) };
 };
 
