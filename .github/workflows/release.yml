@@ -8,19 +8,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4.2.2
       - name: Setup Node.js
-        uses: actions/setup-node@v3.8.1
+        uses: actions/setup-node@v4.1.0
         with:
-          node-version: 18
+          node-version: 22
       - name: Install dependencies
-        uses: borales/actions-yarn@v4.2.0
+        uses: borales/actions-yarn@v5.0.0
         with:
           cmd: install
       - name: Install semantic-release plugin
-        uses: borales/actions-yarn@v4.2.0
+        uses: borales/actions-yarn@v5.0.0
         with:
-          cmd: add conventional-changelog-eslint
+          cmd: add conventional-changelog-eslint@3.0.9
       - name: Release
         uses: codfish/semantic-release-action@v2.2.0
         env:
